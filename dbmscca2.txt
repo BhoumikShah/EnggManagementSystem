@@ -1,0 +1,776 @@
+Enter password: *******
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 9
+Server version: 8.0.43 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2025, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> create usr5;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'usr5' at line 1
+mysql> create databse usr5;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'databse usr5' at line 1
+mysql> create database usr5;
+Query OK, 1 row affected (0.09 sec)
+
+mysql> use usr5;
+Database changed
+mysql> -- ===================================
+mysql> -- ENGINEERING STUDENT MANAGEMENT SYSTEM
+mysql> -- ===================================
+mysql>
+mysql> -- Create Database
+mysql> CREATE DATABASE IF NOT EXISTS EnggStudentMgmt;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> USE EnggStudentMgmt;
+Database changed
+mysql>
+mysql> -- ===================================
+mysql> -- TABLE CREATION
+mysql> -- ===================================
+mysql>
+mysql> -- Students Table
+mysql> CREATE TABLE Students (
+    ->     StudentID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     FirstName VARCHAR(50) NOT NULL,
+    ->     LastName VARCHAR(50) NOT NULL,
+    ->     Email VARCHAR(100) UNIQUE NOT NULL,
+    ->     Phone VARCHAR(15),
+    ->     DOB DATE,
+    ->     Gender ENUM('Male', 'Female', 'Other'),
+    ->     EnrollmentDate DATE NOT NULL,
+    ->     DepartmentID INT,
+    ->     Semester INT CHECK (Semester BETWEEN 1 AND 8),
+    ->     CGPA DECIMAL(3,2) CHECK (CGPA BETWEEN 0 AND 10),
+    ->     Status ENUM('Active', 'Inactive', 'Graduated', 'Suspended') DEFAULT 'Active'
+    -> );
+Query OK, 0 rows affected (0.12 sec)
+
+mysql>
+mysql> -- Departments Table
+mysql> CREATE TABLE Departments (
+    ->     DepartmentID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     DepartmentName VARCHAR(100) NOT NULL,
+    ->     DepartmentCode VARCHAR(10) UNIQUE NOT NULL,
+    ->     HOD VARCHAR(100),
+    ->     Building VARCHAR(50),
+    ->     EstablishedYear INT
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+mysql>
+mysql> -- Courses Table
+mysql> CREATE TABLE Courses (
+    ->     CourseID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     CourseName VARCHAR(100) NOT NULL,
+    ->     CourseCode VARCHAR(20) UNIQUE NOT NULL,
+    ->     Credits INT NOT NULL,
+    ->     DepartmentID INT,
+    ->     Semester INT,
+    ->     Description TEXT
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+mysql>
+mysql> -- Enrollments Table
+mysql> CREATE TABLE Enrollments (
+    ->     EnrollmentID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     StudentID INT,
+    ->     CourseID INT,
+    ->     EnrollmentDate DATE NOT NULL,
+    ->     Grade CHAR(2),
+    ->     AttendancePercentage DECIMAL(5,2),
+    ->     Status ENUM('Enrolled', 'Completed', 'Dropped') DEFAULT 'Enrolled',
+    ->     FOREIGN KEY (StudentID) REFERENCES Students(StudentID) ON DELETE CASCADE,
+    ->     FOREIGN KEY (CourseID) REFERENCES Courses(CourseID) ON DELETE CASCADE
+    -> );
+Query OK, 0 rows affected (0.07 sec)
+
+mysql>
+mysql> -- Faculty Table
+mysql> CREATE TABLE Faculty (
+    ->     FacultyID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     FirstName VARCHAR(50) NOT NULL,
+    ->     LastName VARCHAR(50) NOT NULL,
+    ->     Email VARCHAR(100) UNIQUE NOT NULL,
+    ->     Phone VARCHAR(15),
+    ->     DepartmentID INT,
+    ->     Designation VARCHAR(50),
+    ->     JoiningDate DATE,
+    ->     Salary DECIMAL(10,2),
+    ->     FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID)
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+mysql>
+mysql> -- Course Assignments Table
+mysql> CREATE TABLE CourseAssignments (
+    ->     AssignmentID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     CourseID INT,
+    ->     FacultyID INT,
+    ->     AcademicYear VARCHAR(10),
+    ->     FOREIGN KEY (CourseID) REFERENCES Courses(CourseID) ON DELETE CASCADE,
+    ->     FOREIGN KEY (FacultyID) REFERENCES Faculty(FacultyID) ON DELETE CASCADE
+    -> );
+Query OK, 0 rows affected (0.06 sec)
+
+mysql>
+mysql> -- Examinations Table
+mysql> CREATE TABLE Examinations (
+    ->     ExamID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     ExamName VARCHAR(100),
+    ->     CourseID INT,
+    ->     ExamDate DATE,
+    ->     MaxMarks INT,
+    ->     ExamType ENUM('Mid-Term', 'End-Term', 'Quiz', 'Assignment'),
+    ->     FOREIGN KEY (CourseID) REFERENCES Courses(CourseID) ON DELETE CASCADE
+    -> );
+Query OK, 0 rows affected (0.06 sec)
+
+mysql>
+mysql> -- Exam Results Table
+mysql> CREATE TABLE ExamResults (
+    ->     ResultID INT PRIMARY KEY AUTO_INCREMENT,
+    ->     ExamID INT,
+    ->     StudentID INT,
+    ->     MarksObtained DECIMAL(5,2),
+    ->     Remarks TEXT,
+    ->     FOREIGN KEY (ExamID) REFERENCES Examinations(ExamID) ON DELETE CASCADE,
+    ->     FOREIGN KEY (StudentID) REFERENCES Students(StudentID) ON DELETE CASCADE
+    -> );
+Query OK, 0 rows affected (0.07 sec)
+
+mysql>
+mysql> -- ===================================
+mysql> -- INSERT SAMPLE DATA
+mysql> -- ===================================
+mysql>
+mysql> -- Insert Departments
+mysql> INSERT INTO Departments (DepartmentName, DepartmentCode, HOD, Building, EstablishedYear) VALUES
+    -> ('Computer Science Engineering', 'CSE', 'Dr. Rajesh Kumar', 'Block A', 1995),
+    -> ('Mechanical Engineering', 'ME', 'Dr. Priya Sharma', 'Block B', 1990),
+    -> ('Electrical Engineering', 'EE', 'Dr. Amit Verma', 'Block C', 1992),
+    -> ('Civil Engineering', 'CE', 'Dr. Sunita Reddy', 'Block D', 1988),
+    -> ('Electronics and Communication', 'ECE', 'Dr. Vikram Singh', 'Block E', 1998);
+Query OK, 5 rows affected (0.02 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql>
+mysql> -- Insert Students
+mysql> INSERT INTO Students (FirstName, LastName, Email, Phone, DOB, Gender, EnrollmentDate, DepartmentID, Semester, CGPA, Status) VALUES
+    -> ('Rahul', 'Sharma', 'rahul.sharma@engg.edu', '9876543210', '2003-05-15', 'Male', '2021-08-01', 1, 6, 8.5, 'Active'),
+    -> ('Priya', 'Patel', 'priya.patel@engg.edu', '9876543211', '2003-07-22', 'Female', '2021-08-01', 1, 6, 9.2, 'Active'),
+    -> ('Amit', 'Kumar', 'amit.kumar@engg.edu', '9876543212', '2002-03-10', 'Male', '2020-08-01', 2, 8, 7.8, 'Active'),
+    -> ('Sneha', 'Reddy', 'sneha.reddy@engg.edu', '9876543213', '2003-11-05', 'Female', '2021-08-01', 3, 6, 8.9, 'Active'),
+    -> ('Vikram', 'Singh', 'vikram.singh@engg.edu', '9876543214', '2003-01-20', 'Male', '2021-08-01', 1, 6, 7.5, 'Active'),
+    -> ('Anjali', 'Mehta', 'anjali.mehta@engg.edu', '9876543215', '2004-09-18', 'Female', '2022-08-01', 4, 4, 8.7, 'Active'),
+    -> ('Rohan', 'Gupta', 'rohan.gupta@engg.edu', '9876543216', '2003-06-25', 'Male', '2021-08-01', 5, 6, 8.1, 'Active'),
+    -> ('Kavya', 'Nair', 'kavya.nair@engg.edu', '9876543217', '2002-12-30', 'Female', '2020-08-01', 2, 8, 9.0, 'Active'),
+    -> ('Arjun', 'Rao', 'arjun.rao@engg.edu', '9876543218', '2003-04-12', 'Male', '2021-08-01', 3, 6, 7.2, 'Active'),
+    -> ('Deepika', 'Iyer', 'deepika.iyer@engg.edu', '9876543219', '2001-08-08', 'Female', '2019-08-01', 1, 8, 9.5, 'Active');
+Query OK, 10 rows affected (0.01 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql>
+mysql> -- Insert Courses
+mysql> INSERT INTO Courses (CourseName, CourseCode, Credits, DepartmentID, Semester, Description) VALUES
+    -> ('Data Structures', 'CSE201', 4, 1, 3, 'Fundamentals of data structures and algorithms'),
+    -> ('Database Management Systems', 'CSE301', 4, 1, 5, 'Database design and SQL'),
+    -> ('Operating Systems', 'CSE302', 4, 1, 5, 'OS concepts and implementation'),
+    -> ('Machine Learning', 'CSE401', 4, 1, 7, 'Introduction to ML algorithms'),
+    -> ('Thermodynamics', 'ME201', 3, 2, 3, 'Heat and energy transfer'),
+    -> ('Fluid Mechanics', 'ME301', 4, 2, 5, 'Fluid properties and flow'),
+    -> ('Power Systems', 'EE301', 4, 3, 5, 'Electrical power generation and distribution'),
+    -> ('Control Systems', 'EE302', 4, 3, 6, 'Control theory and applications'),
+    -> ('Structural Analysis', 'CE301', 4, 4, 5, 'Analysis of structures'),
+    -> ('Digital Communication', 'ECE301', 4, 5, 5, 'Digital signal processing');
+Query OK, 10 rows affected (0.01 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql>
+mysql> -- Insert Faculty
+mysql> INSERT INTO Faculty (FirstName, LastName, Email, Phone, DepartmentID, Designation, JoiningDate, Salary) VALUES
+    -> ('Rajesh', 'Kumar', 'rajesh.kumar@engg.edu', '9123456780', 1, 'Professor', '2005-07-15', 120000.00),
+    -> ('Priya', 'Sharma', 'priya.sharma@engg.edu', '9123456781', 2, 'Professor', '2003-08-20', 125000.00),
+    -> ('Amit', 'Verma', 'amit.verma@engg.edu', '9123456782', 3, 'Associate Professor', '2010-06-10', 95000.00),
+    -> ('Sunita', 'Reddy', 'sunita.reddy@engg.edu', '9123456783', 4, 'Professor', '2002-09-05', 130000.00),
+    -> ('Vikram', 'Singh', 'vikram.singh@engg.edu', '9123456784', 5, 'Assistant Professor', '2015-07-01', 75000.00),
+    -> ('Meera', 'Joshi', 'meera.joshi@engg.edu', '9123456785', 1, 'Assistant Professor', '2018-08-15', 70000.00);
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql>
+mysql> -- Insert Enrollments
+mysql> INSERT INTO Enrollments (StudentID, CourseID, EnrollmentDate, Grade, AttendancePercentage, Status) VALUES
+    -> (1, 2, '2023-08-01', 'A', 92.5, 'Completed'),
+    -> (1, 3, '2023-08-01', 'B+', 88.0, 'Completed'),
+    -> (2, 2, '2023-08-01', 'A+', 95.0, 'Completed'),
+    -> (2, 4, '2024-08-01', NULL, 90.0, 'Enrolled'),
+    -> (3, 5, '2023-08-01', 'B', 85.0, 'Completed'),
+    -> (3, 6, '2024-08-01', NULL, 82.0, 'Enrolled'),
+    -> (4, 7, '2023-08-01', 'A', 91.0, 'Completed'),
+    -> (5, 1, '2022-08-01', 'B+', 87.5, 'Completed'),
+    -> (6, 9, '2023-08-01', 'A-', 89.0, 'Completed'),
+    -> (7, 10, '2023-08-01', 'B+', 86.5, 'Completed');
+Query OK, 10 rows affected (0.01 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql>
+mysql> -- Insert Course Assignments
+mysql> INSERT INTO CourseAssignments (CourseID, FacultyID, AcademicYear) VALUES
+    -> (1, 1, '2024-25'),
+    -> (2, 1, '2024-25'),
+    -> (3, 6, '2024-25'),
+    -> (4, 1, '2024-25'),
+    -> (5, 2, '2024-25'),
+    -> (6, 2, '2024-25'),
+    -> (7, 3, '2024-25'),
+    -> (8, 3, '2024-25'),
+    -> (9, 4, '2024-25'),
+    -> (10, 5, '2024-25');
+Query OK, 10 rows affected (0.01 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql>
+mysql> -- Insert Examinations
+mysql> INSERT INTO Examinations (ExamName, CourseID, ExamDate, MaxMarks, ExamType) VALUES
+    -> ('DBMS Mid-Term', 2, '2024-09-15', 50, 'Mid-Term'),
+    -> ('DBMS End-Term', 2, '2024-12-10', 100, 'End-Term'),
+    -> ('OS Mid-Term', 3, '2024-09-20', 50, 'Mid-Term'),
+    -> ('ML Quiz 1', 4, '2024-10-05', 20, 'Quiz'),
+    -> ('Thermodynamics End-Term', 5, '2023-12-15', 100, 'End-Term');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql>
+mysql> -- Insert Exam Results
+mysql> INSERT INTO ExamResults (ExamID, StudentID, MarksObtained, Remarks) VALUES
+    -> (1, 1, 42, 'Good performance'),
+    -> (1, 2, 48, 'Excellent'),
+    -> (2, 1, 85, 'Very good'),
+    -> (2, 2, 95, 'Outstanding'),
+    -> (3, 1, 38, 'Satisfactory'),
+    -> (5, 3, 78, 'Good effort');
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql>
+mysql> -- ===================================
+mysql> -- 10 SIMPLE CRUD OPERATIONS
+mysql> -- ===================================
+mysql>
+mysql> -- 1. CREATE: Add a new student
+mysql> INSERT INTO Students (FirstName, LastName, Email, Phone, DOB, Gender, EnrollmentDate, DepartmentID, Semester, CGPA, Status)
+    -> VALUES ('Neha', 'Chopra', 'neha.chopra@engg.edu', '9876543220', '2004-02-14', 'Female', '2022-08-01', 1, 4, 8.3, 'Active');
+Query OK, 1 row affected (0.00 sec)
+
+mysql>
+mysql> -- 2. READ: Get all students
+mysql> SELECT * FROM Students;
++-----------+-----------+----------+-----------------------+------------+------------+--------+----------------+--------------+----------+------+--------+
+| StudentID | FirstName | LastName | Email                 | Phone      | DOB        | Gender | EnrollmentDate | DepartmentID | Semester | CGPA | Status |
++-----------+-----------+----------+-----------------------+------------+------------+--------+----------------+--------------+----------+------+--------+
+|         1 | Rahul     | Sharma   | rahul.sharma@engg.edu | 9876543210 | 2003-05-15 | Male   | 2021-08-01     |            1 |  6 | 8.50 | Active |
+|         2 | Priya     | Patel    | priya.patel@engg.edu  | 9876543211 | 2003-07-22 | Female | 2021-08-01     |            1 |  6 | 9.20 | Active |
+|         3 | Amit      | Kumar    | amit.kumar@engg.edu   | 9876543212 | 2002-03-10 | Male   | 2020-08-01     |            2 |  8 | 7.80 | Active |
+|         4 | Sneha     | Reddy    | sneha.reddy@engg.edu  | 9876543213 | 2003-11-05 | Female | 2021-08-01     |            3 |  6 | 8.90 | Active |
+|         5 | Vikram    | Singh    | vikram.singh@engg.edu | 9876543214 | 2003-01-20 | Male   | 2021-08-01     |            1 |  6 | 7.50 | Active |
+|         6 | Anjali    | Mehta    | anjali.mehta@engg.edu | 9876543215 | 2004-09-18 | Female | 2022-08-01     |            4 |  4 | 8.70 | Active |
+|         7 | Rohan     | Gupta    | rohan.gupta@engg.edu  | 9876543216 | 2003-06-25 | Male   | 2021-08-01     |            5 |  6 | 8.10 | Active |
+|         8 | Kavya     | Nair     | kavya.nair@engg.edu   | 9876543217 | 2002-12-30 | Female | 2020-08-01     |            2 |  8 | 9.00 | Active |
+|         9 | Arjun     | Rao      | arjun.rao@engg.edu    | 9876543218 | 2003-04-12 | Male   | 2021-08-01     |            3 |  6 | 7.20 | Active |
+|        10 | Deepika   | Iyer     | deepika.iyer@engg.edu | 9876543219 | 2001-08-08 | Female | 2019-08-01     |            1 |  8 | 9.50 | Active |
+|        11 | Neha      | Chopra   | neha.chopra@engg.edu  | 9876543220 | 2004-02-14 | Female | 2022-08-01     |            1 |  4 | 8.30 | Active |
++-----------+-----------+----------+-----------------------+------------+------------+--------+----------------+--------------+----------+------+--------+
+11 rows in set (0.01 sec)
+
+mysql>
+mysql> -- 3. READ: Get student by ID
+mysql> SELECT * FROM Students WHERE StudentID = 1;
++-----------+-----------+----------+-----------------------+------------+------------+--------+----------------+--------------+----------+------+--------+
+| StudentID | FirstName | LastName | Email                 | Phone      | DOB        | Gender | EnrollmentDate | DepartmentID | Semester | CGPA | Status |
++-----------+-----------+----------+-----------------------+------------+------------+--------+----------------+--------------+----------+------+--------+
+|         1 | Rahul     | Sharma   | rahul.sharma@engg.edu | 9876543210 | 2003-05-15 | Male   | 2021-08-01     |            1 |  6 | 8.50 | Active |
++-----------+-----------+----------+-----------------------+------------+------------+--------+----------------+--------------+----------+------+--------+
+1 row in set (0.01 sec)
+
+mysql>
+mysql> -- 4. UPDATE: Update student CGPA
+mysql> UPDATE Students SET CGPA = 8.8 WHERE StudentID = 5;
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql>
+mysql> -- 5. DELETE: Remove a student
+mysql> DELETE FROM Students WHERE StudentID = 11;
+Query OK, 1 row affected (0.00 sec)
+
+mysql>
+mysql> -- 6. CREATE: Add a new course
+mysql> INSERT INTO Courses (CourseName, CourseCode, Credits, DepartmentID, Semester, Description)
+    -> VALUES ('Artificial Intelligence', 'CSE402', 4, 1, 7, 'AI concepts and applications');
+Query OK, 1 row affected (0.00 sec)
+
+mysql>
+mysql> -- 7. READ: Get all courses for a department
+mysql> SELECT * FROM Courses WHERE DepartmentID = 1;
++----------+-----------------------------+------------+---------+--------------+----------+------------------------------------------------+
+| CourseID | CourseName                  | CourseCode | Credits | DepartmentID | Semester | Description      |
++----------+-----------------------------+------------+---------+--------------+----------+------------------------------------------------+
+|        1 | Data Structures             | CSE201     |       4 |            1 |        3 | Fundamentals of data structures and algorithms |
+|        2 | Database Management Systems | CSE301     |       4 |            1 |        5 | Database design and SQL      |
+|        3 | Operating Systems           | CSE302     |       4 |            1 |        5 | OS concepts and implementation      |
+|        4 | Machine Learning            | CSE401     |       4 |            1 |        7 | Introduction to ML algorithms      |
+|       11 | Artificial Intelligence     | CSE402     |       4 |            1 |        7 | AI concepts and applications      |
++----------+-----------------------------+------------+---------+--------------+----------+------------------------------------------------+
+5 rows in set (0.00 sec)
+
+mysql>
+mysql> -- 8. UPDATE: Update faculty salary
+mysql> UPDATE Faculty SET Salary = 80000.00 WHERE FacultyID = 5;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql>
+mysql> -- 9. CREATE: Enroll student in a course
+mysql> INSERT INTO Enrollments (StudentID, CourseID, EnrollmentDate, AttendancePercentage, Status)
+    -> VALUES (1, 4, '2024-08-01', 85.0, 'Enrolled');
+Query OK, 1 row affected (0.00 sec)
+
+mysql>
+mysql> -- 10. DELETE: Remove an enrollment
+mysql> DELETE FROM Enrollments WHERE EnrollmentID = 11;
+Query OK, 1 row affected (0.00 sec)
+
+mysql>
+mysql> -- ===================================
+mysql> -- 10 ADVANCED OPERATIONS (JOINS & SUBQUERIES)
+mysql> -- ===================================
+mysql>
+mysql> -- 1. Get all students with their department names (INNER JOIN)
+mysql> SELECT s.StudentID, s.FirstName, s.LastName, s.Email, d.DepartmentName, s.Semester, s.CGPA
+    -> FROM Students s
+    -> INNER JOIN Departments d ON s.DepartmentID = d.DepartmentID
+    -> WHERE s.Status = 'Active';
++-----------+-----------+----------+-----------------------+-------------------------------+----------+------+
+| StudentID | FirstName | LastName | Email                 | DepartmentName                | Semester | CGPA |
++-----------+-----------+----------+-----------------------+-------------------------------+----------+------+
+|         1 | Rahul     | Sharma   | rahul.sharma@engg.edu | Computer Science Engineering  |        6 | 8.50 |
+|         2 | Priya     | Patel    | priya.patel@engg.edu  | Computer Science Engineering  |        6 | 9.20 |
+|         3 | Amit      | Kumar    | amit.kumar@engg.edu   | Mechanical Engineering        |        8 | 7.80 |
+|         4 | Sneha     | Reddy    | sneha.reddy@engg.edu  | Electrical Engineering        |        6 | 8.90 |
+|         5 | Vikram    | Singh    | vikram.singh@engg.edu | Computer Science Engineering  |        6 | 8.80 |
+|         6 | Anjali    | Mehta    | anjali.mehta@engg.edu | Civil Engineering             |        4 | 8.70 |
+|         7 | Rohan     | Gupta    | rohan.gupta@engg.edu  | Electronics and Communication |        6 | 8.10 |
+|         8 | Kavya     | Nair     | kavya.nair@engg.edu   | Mechanical Engineering        |        8 | 9.00 |
+|         9 | Arjun     | Rao      | arjun.rao@engg.edu    | Electrical Engineering        |        6 | 7.20 |
+|        10 | Deepika   | Iyer     | deepika.iyer@engg.edu | Computer Science Engineering  |        8 | 9.50 |
++-----------+-----------+----------+-----------------------+-------------------------------+----------+------+
+10 rows in set (0.00 sec)
+
+mysql>
+mysql> -- 2. Get students enrolled in courses with faculty details (MULTIPLE JOINS)
+mysql> SELECT s.FirstName AS StudentName, c.CourseName, f.FirstName AS FacultyName, f.LastName AS FacultyLastName
+    -> FROM Students s
+    -> INNER JOIN Enrollments e ON s.StudentID = e.StudentID
+    -> INNER JOIN Courses c ON e.CourseID = c.CourseID
+    -> INNER JOIN CourseAssignments ca ON c.CourseID = ca.CourseID
+    -> INNER JOIN Faculty f ON ca.FacultyID = f.FacultyID
+    -> WHERE e.Status = 'Enrolled';
++-------------+------------------+-------------+-----------------+
+| StudentName | CourseName       | FacultyName | FacultyLastName |
++-------------+------------------+-------------+-----------------+
+| Priya       | Machine Learning | Rajesh      | Kumar           |
+| Amit        | Fluid Mechanics  | Priya       | Sharma          |
++-------------+------------------+-------------+-----------------+
+2 rows in set (0.01 sec)
+
+mysql>
+mysql> -- 3. Find students with CGPA above department average (SUBQUERY)
+mysql> SELECT s.FirstName, s.LastName, s.CGPA, d.DepartmentName
+    -> FROM Students s
+    -> INNER JOIN Departments d ON s.DepartmentID = d.DepartmentID
+    -> WHERE s.CGPA > (
+    ->     SELECT AVG(CGPA)
+    ->     FROM Students
+    ->     WHERE DepartmentID = s.DepartmentID
+    -> );
++-----------+----------+------+------------------------------+
+| FirstName | LastName | CGPA | DepartmentName               |
++-----------+----------+------+------------------------------+
+| Priya     | Patel    | 9.20 | Computer Science Engineering |
+| Sneha     | Reddy    | 8.90 | Electrical Engineering       |
+| Kavya     | Nair     | 9.00 | Mechanical Engineering       |
+| Deepika   | Iyer     | 9.50 | Computer Science Engineering |
++-----------+----------+------+------------------------------+
+4 rows in set (0.00 sec)
+
+mysql>
+mysql> -- 4. Get courses with no enrollments (LEFT JOIN with NULL check)
+mysql> SELECT c.CourseID, c.CourseName, c.CourseCode
+    -> FROM Courses c
+    -> LEFT JOIN Enrollments e ON c.CourseID = e.CourseID
+    -> WHERE e.EnrollmentID IS NULL;
++----------+-------------------------+------------+
+| CourseID | CourseName              | CourseCode |
++----------+-------------------------+------------+
+|        8 | Control Systems         | EE302      |
+|       11 | Artificial Intelligence | CSE402     |
++----------+-------------------------+------------+
+2 rows in set (0.00 sec)
+
+mysql>
+mysql> -- 5. Find top 3 students by CGPA in each department (SUBQUERY with LIMIT)
+mysql> SELECT s.FirstName, s.LastName, d.DepartmentName, s.CGPA
+    -> FROM Students s
+    -> INNER JOIN Departments d ON s.DepartmentID = d.DepartmentID
+    -> WHERE (
+    ->     SELECT COUNT(*)
+    ->     FROM Students s2
+    ->     WHERE s2.DepartmentID = s.DepartmentID AND s2.CGPA > s.CGPA
+    -> ) < 3
+    -> ORDER BY d.DepartmentName, s.CGPA DESC;
++-----------+----------+-------------------------------+------+
+| FirstName | LastName | DepartmentName                | CGPA |
++-----------+----------+-------------------------------+------+
+| Anjali    | Mehta    | Civil Engineering             | 8.70 |
+| Deepika   | Iyer     | Computer Science Engineering  | 9.50 |
+| Priya     | Patel    | Computer Science Engineering  | 9.20 |
+| Vikram    | Singh    | Computer Science Engineering  | 8.80 |
+| Sneha     | Reddy    | Electrical Engineering        | 8.90 |
+| Arjun     | Rao      | Electrical Engineering        | 7.20 |
+| Rohan     | Gupta    | Electronics and Communication | 8.10 |
+| Kavya     | Nair     | Mechanical Engineering        | 9.00 |
+| Amit      | Kumar    | Mechanical Engineering        | 7.80 |
++-----------+----------+-------------------------------+------+
+9 rows in set (0.00 sec)
+
+mysql>
+mysql> -- 6. Get total credits enrolled by each student (JOIN with GROUP BY)
+mysql> SELECT s.StudentID, s.FirstName, s.LastName, SUM(c.Credits) AS TotalCredits
+    -> FROM Students s
+    -> INNER JOIN Enrollments e ON s.StudentID = e.StudentID
+    -> INNER JOIN Courses c ON e.CourseID = c.CourseID
+    -> WHERE e.Status IN ('Enrolled', 'Completed')
+    -> GROUP BY s.StudentID, s.FirstName, s.LastName
+    -> HAVING SUM(c.Credits) > 10;
+Empty set (0.00 sec)
+
+mysql>
+mysql> -- 7. Find faculty teaching more than 2 courses (SUBQUERY in HAVING)
+mysql> SELECT f.FirstName, f.LastName, f.Email, COUNT(ca.CourseID) AS CourseCount
+    -> FROM Faculty f
+    -> INNER JOIN CourseAssignments ca ON f.FacultyID = ca.FacultyID
+    -> GROUP BY f.FacultyID, f.FirstName, f.LastName, f.Email
+    -> HAVING COUNT(ca.CourseID) > 2;
++-----------+----------+-----------------------+-------------+
+| FirstName | LastName | Email                 | CourseCount |
++-----------+----------+-----------------------+-------------+
+| Rajesh    | Kumar    | rajesh.kumar@engg.edu |           3 |
++-----------+----------+-----------------------+-------------+
+1 row in set (0.00 sec)
+
+mysql>
+mysql> -- 8. Get students who scored above 80 in all their exams (SUBQUERY with NOT EXISTS)
+mysql> SELECT s.StudentID, s.FirstName, s.LastName
+    -> FROM Students s
+    -> WHERE NOT EXISTS (
+    ->     SELECT 1
+    ->     FROM ExamResults er
+    ->     WHERE er.StudentID = s.StudentID AND er.MarksObtained < 80
+    -> ) AND EXISTS (
+    ->     SELECT 1 FROM ExamResults er2 WHERE er2.StudentID = s.StudentID
+    -> );
+Empty set (0.00 sec)
+
+mysql>
+mysql> -- 9. Department-wise student count and average CGPA (JOIN with AGGREGATE)
+mysql> SELECT d.DepartmentName, d.DepartmentCode,
+    ->        COUNT(s.StudentID) AS TotalStudents,
+    ->        ROUND(AVG(s.CGPA), 2) AS AvgCGPA,
+    ->        MAX(s.CGPA) AS MaxCGPA
+    -> FROM Departments d
+    -> LEFT JOIN Students s ON d.DepartmentID = s.DepartmentID
+    -> GROUP BY d.DepartmentID, d.DepartmentName, d.DepartmentCode
+    -> ORDER BY AvgCGPA DESC;
++-------------------------------+----------------+---------------+---------+---------+
+| DepartmentName                | DepartmentCode | TotalStudents | AvgCGPA | MaxCGPA |
++-------------------------------+----------------+---------------+---------+---------+
+| Computer Science Engineering  | CSE            |             4 |    9.00 |    9.50 |
+| Civil Engineering             | CE             |             1 |    8.70 |    8.70 |
+| Mechanical Engineering        | ME             |             2 |    8.40 |    9.00 |
+| Electronics and Communication | ECE            |             1 |    8.10 |    8.10 |
+| Electrical Engineering        | EE             |             2 |    8.05 |    8.90 |
++-------------------------------+----------------+---------------+---------+---------+
+5 rows in set (0.00 sec)
+
+mysql>
+mysql> -- 10. Get students with perfect attendance (>95%) in any course (CORRELATED SUBQUERY)
+mysql> SELECT DISTINCT s.StudentID, s.FirstName, s.LastName, s.Email
+    -> FROM Students s
+    -> WHERE EXISTS (
+    ->     SELECT 1
+    ->     FROM Enrollments e
+    ->     WHERE e.StudentID = s.StudentID
+    ->     AND e.AttendancePercentage > 95
+    -> );
+Empty set (0.00 sec)
+
+mysql>
+mysql> -- ===================================
+mysql> -- 2 STORED FUNCTIONS
+mysql> -- ===================================
+mysql>
+mysql> -- Function 1: Calculate grade based on marks
+mysql> DELIMITER //
+mysql> CREATE FUNCTION CalculateGrade(marks DECIMAL(5,2), maxMarks INT)
+    -> RETURNS CHAR(2)
+    -> DETERMINISTIC
+    -> BEGIN
+    ->     DECLARE percentage DECIMAL(5,2);
+    ->     DECLARE grade CHAR(2);
+    ->
+    ->     SET percentage = (marks / maxMarks) * 100;
+    ->
+    ->     IF percentage >= 90 THEN SET grade = 'A+';
+    ->     ELSEIF percentage >= 80 THEN SET grade = 'A';
+    ->     ELSEIF percentage >= 70 THEN SET grade = 'B+';
+    ->     ELSEIF percentage >= 60 THEN SET grade = 'B';
+    ->     ELSEIF percentage >= 50 THEN SET grade = 'C';
+    ->     ELSEIF percentage >= 40 THEN SET grade = 'D';
+    ->     ELSE SET grade = 'F';
+    ->     END IF;
+    ->
+    ->     RETURN grade;
+    -> END //
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> DELIMITER ;
+mysql>
+mysql> -- Function 2: Get total students in a department
+mysql> DELIMITER //
+mysql> CREATE FUNCTION GetDepartmentStrength(deptID INT)
+    -> RETURNS INT
+    -> DETERMINISTIC
+    -> READS SQL DATA
+    -> BEGIN
+    ->     DECLARE studentCount INT;
+    ->
+    ->     SELECT COUNT(*) INTO studentCount
+    ->     FROM Students
+    ->     WHERE DepartmentID = deptID AND Status = 'Active';
+    ->
+    ->     RETURN studentCount;
+    -> END //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DELIMITER ;
+mysql>
+mysql> -- Test Functions
+mysql> SELECT CalculateGrade(85, 100) AS Grade;
++-------+
+| Grade |
++-------+
+| A     |
++-------+
+1 row in set (0.01 sec)
+
+mysql> SELECT GetDepartmentStrength(1) AS CSE_Students;
++--------------+
+| CSE_Students |
++--------------+
+|            4 |
++--------------+
+1 row in set (0.00 sec)
+
+mysql>
+mysql> -- ===================================
+mysql> -- 2 STORED PROCEDURES
+mysql> -- ===================================
+mysql>
+mysql> -- Procedure 1: Get student complete details with courses
+mysql> DELIMITER //
+mysql> CREATE PROCEDURE GetStudentDetails(IN studID INT)
+    -> BEGIN
+    ->     -- Student basic info
+    ->     SELECT s.*, d.DepartmentName
+    ->     FROM Students s
+    ->     INNER JOIN Departments d ON s.DepartmentID = d.DepartmentID
+    ->     WHERE s.StudentID = studID;
+    ->
+    ->     -- Enrolled courses
+    ->     SELECT c.CourseName, c.CourseCode, c.Credits, e.Grade, e.AttendancePercentage, e.Status
+    ->     FROM Enrollments e
+    ->     INNER JOIN Courses c ON e.CourseID = c.CourseID
+    ->     WHERE e.StudentID = studID;
+    ->
+    ->     -- Exam results
+    ->     SELECT ex.ExamName, ex.ExamType, er.MarksObtained, ex.MaxMarks,
+    ->            ROUND((er.MarksObtained/ex.MaxMarks)*100, 2) AS Percentage
+    ->     FROM ExamResults er
+    ->     INNER JOIN Examinations ex ON er.ExamID = ex.ExamID
+    ->     WHERE er.StudentID = studID;
+    -> END //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DELIMITER ;
+mysql>
+mysql> -- Procedure 2: Promote students to next semester
+mysql> DELIMITER //
+mysql> CREATE PROCEDURE PromoteStudents(IN deptID INT, IN currentSem INT)
+    -> BEGIN
+    ->     DECLARE studentsPromoted INT;
+    ->
+    ->     -- Update semester for eligible students (CGPA >= 6.0)
+    ->     UPDATE Students
+    ->     SET Semester = Semester + 1
+    ->     WHERE DepartmentID = deptID
+    ->     AND Semester = currentSem
+    ->     AND CGPA >= 6.0
+    ->     AND Status = 'Active';
+    ->
+    ->     SET studentsPromoted = ROW_COUNT();
+    ->
+    ->     SELECT CONCAT(studentsPromoted, ' students promoted from semester ', currentSem, ' to ', currentSem + 1) AS Result;
+    -> END //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DELIMITER ;
+mysql>
+mysql> -- Test Procedures
+mysql> CALL GetStudentDetails(1);
++-----------+-----------+----------+-----------------------+------------+------------+--------+----------------+--------------+----------+------+--------+------------------------------+
+| StudentID | FirstName | LastName | Email                 | Phone      | DOB        | Gender | EnrollmentDate | DepartmentID | Semester | CGPA | Status | DepartmentName               |
++-----------+-----------+----------+-----------------------+------------+------------+--------+----------------+--------------+----------+------+--------+------------------------------+
+|         1 | Rahul     | Sharma   | rahul.sharma@engg.edu | 9876543210 | 2003-05-15 | Male   | 2021-08-01     |            1 |  6 | 8.50 | Active | Computer Science Engineering |
++-----------+-----------+----------+-----------------------+------------+------------+--------+----------------+--------------+----------+------+--------+------------------------------+
+1 row in set (0.00 sec)
+
++-----------------------------+------------+---------+-------+----------------------+-----------+
+| CourseName                  | CourseCode | Credits | Grade | AttendancePercentage | Status    |
++-----------------------------+------------+---------+-------+----------------------+-----------+
+| Database Management Systems | CSE301     |       4 | A     |                92.50 | Completed |
+| Operating Systems           | CSE302     |       4 | B+    |                88.00 | Completed |
++-----------------------------+------------+---------+-------+----------------------+-----------+
+2 rows in set (0.04 sec)
+
++---------------+----------+---------------+----------+------------+
+| ExamName      | ExamType | MarksObtained | MaxMarks | Percentage |
++---------------+----------+---------------+----------+------------+
+| DBMS Mid-Term | Mid-Term |         42.00 |       50 |      84.00 |
+| DBMS End-Term | End-Term |         85.00 |      100 |      85.00 |
+| OS Mid-Term   | Mid-Term |         38.00 |       50 |      76.00 |
++---------------+----------+---------------+----------+------------+
+3 rows in set (0.06 sec)
+
+Query OK, 0 rows affected (0.11 sec)
+
+mysql> CALL PromoteStudents(1, 6);
++------------------------------------------+
+| Result                                   |
++------------------------------------------+
+| 3 students promoted from semester 6 to 7 |
++------------------------------------------+
+1 row in set (0.01 sec)
+
+Query OK, 0 rows affected (0.01 sec)
+
+mysql>
+mysql> -- ===================================
+mysql> -- 2 TRIGGERS
+mysql> -- ===================================
+mysql>
+mysql> -- Trigger 1: Update student CGPA when new enrollment grade is added
+mysql> DELIMITER //
+mysql> CREATE TRIGGER UpdateCGPAAfterGrade
+    -> AFTER UPDATE ON Enrollments
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     DECLARE newCGPA DECIMAL(3,2);
+    ->
+    ->     IF NEW.Grade IS NOT NULL AND OLD.Grade IS NULL THEN
+    ->         -- Calculate new CGPA based on grade points
+    ->         SELECT AVG(
+    ->             CASE
+    ->                 WHEN e.Grade = 'A+' THEN 10
+    ->                 WHEN e.Grade = 'A' THEN 9
+    ->                 WHEN e.Grade = 'B+' THEN 8
+    ->                 WHEN e.Grade = 'B' THEN 7
+    ->                 WHEN e.Grade = 'C' THEN 6
+    ->                 WHEN e.Grade = 'D' THEN 5
+    ->                 ELSE 0
+    ->             END
+    ->         ) INTO newCGPA
+    ->         FROM Enrollments e
+    ->         WHERE e.StudentID = NEW.StudentID AND e.Grade IS NOT NULL;
+    ->
+    ->         UPDATE Students
+    ->         SET CGPA = newCGPA
+    ->         WHERE StudentID = NEW.StudentID;
+    ->     END IF;
+    -> END //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DELIMITER ;
+mysql>
+mysql> -- Trigger 2: Validate attendance percentage before insert/update
+mysql> DELIMITER //
+mysql> CREATE TRIGGER ValidateAttendance
+    -> BEFORE INSERT ON Enrollments
+    -> FOR EACH ROW
+    -> BEGIN
+    ->     IF NEW.AttendancePercentage < 0 OR NEW.AttendancePercentage > 100 THEN
+    ->         SIGNAL SQLSTATE '45000'
+    ->         SET MESSAGE_TEXT = 'Attendance percentage must be between 0 and 100';
+    ->     END IF;
+    ->
+    ->     IF NEW.AttendancePercentage < 75 THEN
+    ->         SET NEW.Status = 'Enrolled'; -- Mark as low attendance
+    ->     END IF;
+    -> END //
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> DELIMITER ;
+mysql>
+mysql> DELIMITER ;
+mysql>
+mysql> -- ===================================
+mysql> -- SAMPLE QUERIES TO TEST THE SYSTEM
+mysql> -- ===================================
+mysql>
+mysql> -- View all tables
+mysql> SELECT 'Students' AS TableName, COUNT(*) AS RecordCount FROM Students
+    -> UNION ALL
+    -> SELECT 'Departments', COUNT(*) FROM Departments
+    -> UNION ALL
+    -> SELECT 'Courses', COUNT(*) FROM Courses
+    -> UNION ALL
+    -> SELECT 'Enrollments', COUNT(*) FROM Enrollments
+    -> UNION ALL
+    -> SELECT 'Faculty', COUNT(*) FROM Faculty
+    -> UNION ALL
+    -> SELECT 'Examinations', COUNT(*) FROM Examinations
+    -> UNION ALL
+    -> SELECT 'ExamResults', COUNT(*) FROM ExamResults;
++--------------+-------------+
+| TableName    | RecordCount |
++--------------+-------------+
+| Students     |          10 |
+| Departments  |           5 |
+| Courses      |          11 |
+| Enrollments  |          10 |
+| Faculty      |           6 |
+| Examinations |           5 |
+| ExamResults  |           6 |
++--------------+-------------+
+7 rows in set (0.00 sec)
+
+mysql>
+mysql> -- End of Script
+mysql>
