@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engineering Student Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1em;
+            font-weight: 500;
+            color: #495057;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            background: #e9ecef;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .content {
+            padding: 30px;
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .stat-card h3 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #dee2e6;
+            transition: background 0.3s;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #667eea;
+        }
+
+        .close-btn {
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .filter-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Engineering Student Management System</h1>
+            <p>Comprehensive Database Management Interface</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('dashboard')">Dashboard</button>
+            <button class="nav-tab" onclick="showTab('students')">Students</button>
+            <button class="nav-tab" onclick="showTab('departments')">Departments</button>
+            <button class="nav-tab" onclick="showTab('courses')">Courses</button>
+            <button class="nav-tab" onclick="showTab('enrollments')">Enrollments</button>
+            <button class="nav-tab" onclick="showTab('faculty')">Faculty</button>
+            <button class="nav-tab" onclick="showTab('exams')">Examinations</button>
+            <button class="nav-tab" onclick="showTab('reports')">Reports</button>
+        </div>
+
+        <div id="alert" class="alert"></div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="content active">
+            <h2 style="margin-bottom: 20px; color: #495057;">System Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="totalStudents">0</h3>
+                    <p>Total Students</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <h3 id="totalDepartments">0</h3>
+                    <p>Departments</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <h3 id="totalCourses">0</h3>
+                    <p>Courses</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                    <h3 id="totalFaculty">0</h3>
+                    <p>Faculty Members</p>
+                </div>
+            </div>
+
+            <h3 style="margin: 30px 0 20px; color: #495057;">Recent Activity</h3>
+            <table id="recentActivity">
+                <thead>
+                    <tr>
+                        <th>Activity</th>
+                        <th>Details</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="3" style="text-align: center;">No recent activity</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Students -->
+        <div id="students" class="content">
+            <h2 style="margin-bottom: 20px; color: #495057;">Student Management</h2>
+            
+            <div class="search-bar">
+                <input type="text" id="studentSearch" placeholder="Search students by name, email, or ID...">
+                <button class="btn btn-primary" onclick="searchStudents()">Search</button>
+                <button class="btn btn-success" onclick="showAddStudentModal()">Add New Student</button>
+            </div>
+
+            <div class="filter-section">
+                <label>Filter by Department:</label>
+                <select id="studentDeptFilter" onchange="filterStudents()">
+                    <option value="">All Departments</option>
+                </select>
+                <label style="margin-left: 20px;">Filter by Status:</label>
+                <select id="studentStatusFilter" onchange="filterStudents()">
+                    <option value="">All Status</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                    <option value="Graduated">Graduated</option>
+                    <option value="Suspended">Suspended</option>
+                </select>
+            </div>
+
+            <table id="studentsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Semester</th>
+                        <th>CGPA</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Departments -->
+        <div id="departments" class="content">
+            <h2 style="margin-bottom: 20px; color: #495057;">Department Management</h2>
+            
+            <button class="btn btn-success" style="margin-bottom: 20px;" onclick="showAddDepartmentModal()">Add New Department</button>
+
+            <table id="departmentsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Department Name</th>
+                        <th>Code</th>
+                        <th>HOD</th>
+                        <th>Building</th>
+                        <th>Established</th>
+                        <th>Students</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Courses -->
+        <div id="courses" class="content">
+            <h2 style="margin-bottom: 20px; color: #495057;">Course Management</h2>
+            
+            <button class="btn btn-success" style="margin-bottom: 20px;" onclick="showAddCourseModal()">Add New Course</button>
+
+            <table id="coursesTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Course Name</th>
+                        <th>Code</th>
+                        <th>Credits</th>
+                        <th>Department</th>
+                        <th>Semester</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Enrollments -->
+        <div id="enrollments" class="content">
+            <h2 style="margin-bottom: 20px; color: #495057;">Enrollment Management</h2>
+            
+            <button class="btn btn-success" style="margin-bottom: 20px;" onclick="showAddEnrollmentModal()">New Enrollment</button>
+
+            <table id="enrollmentsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Student</th>
+                        <th>Course</th>
+                        <th>Enrollment Date</th>
+                        <th>Grade</th>
+                        <th>Attendance %</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Faculty -->
+        <div id="faculty" class="content">
+            <h2 style="margin-bottom: 20px; color: #495057;">Faculty Management</h2>
+            
+            <button class="btn btn-success" style="margin-bottom: 20px;" onclick="showAddFacultyModal()">Add New Faculty</button>
+
+            <table id="facultyTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Designation</th>
+                        <th>Joining Date</th>
+                        <th>Salary</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Examinations -->
+        <div id="exams" class="content">
+            <h2 style="margin-bottom: 20px; color: #495057;">Examination Management</h2>
+            
+            <button class="btn btn-success" style="margin-bottom: 20px;" onclick="showAddExamModal()">Schedule New Exam</button>
+
+            <table id="examsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Exam Name</th>
+                        <th>Course</th>
+                        <th>Date</th>
+                        <th>Max Marks</th>
+                        <th>Type</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Reports -->
+        <div id="reports" class="content">
+            <h2 style="margin-bottom: 20px; color: #495057;">Reports & Analytics</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="avgCGPA">0.0</h3>
+                    <p>Average CGPA</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <h3 id="activeEnrollments">0</h3>
+                    <p>Active Enrollments</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <h3 id="upcomingExams">0</h3>
+                    <p>Upcoming Exams</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                    <h3 id="topPerformer">-</h3>
+                    <p>Top Performer</p>
+                </div>
+            </div>
+
+            <h3 style="margin: 30px 0 20px; color: #495057;">Department-wise Statistics</h3>
+            <table id="deptStatsTable">
+                <thead>
+                    <tr>
+                        <th>Department</th>
+                        <th>Total Students</th>
+                        <th>Avg CGPA</th>
+                        <th>Max CGPA</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Modal Title</h2>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data storage (simulating database)
+        let data = {
+            students: [
+                {id: 1, firstName: 'Rahul', lastName: 'Sharma', email: 'rahul.sharma@engg.edu', phone: '9876543210', dob: '2003-05-15', gender: 'Male', enrollmentDate: '2021-08-01', departmentID: 1, semester: 7, cgpa: 8.5, status: 'Active'},
+                {id: 2, firstName: 'Priya', lastName: 'Patel', email: 'priya.patel@engg.edu', phone: '9876543211', dob: '2003-07-22', gender: 'Female', enrollmentDate: '2021-08-01', departmentID: 1, semester: 7, cgpa: 9.2, status: 'Active'},
+                {id: 3, firstName: 'Amit', lastName: 'Kumar', email: 'amit.kumar@engg.edu', phone: '9876543212', dob: '2002-03-10', gender: 'Male', enrollmentDate: '2020-08-01', departmentID: 2, semester: 8, cgpa: 7.8, status: 'Active'},
+                {id: 4, firstName: 'Sneha', lastName: 'Reddy', email: 'sneha.reddy@engg.edu', phone: '9876543213', dob: '2003-11-05', gender: 'Female', enrollmentDate: '2021-08-01', departmentID: 3, semester: 7, cgpa: 8.9, status: 'Active'},
+                {id: 5, firstName: 'Vikram', lastName: 'Singh', email: 'vikram.singh@engg.edu', phone: '9876543214', dob: '2003-01-20', gender: 'Male', enrollmentDate: '2021-08-01', departmentID: 1, semester: 7, cgpa: 8.8, status: 'Active'}
+            ],
+            departments: [
+                {id: 1, name: 'Computer Science Engineering', code: 'CSE', hod: 'Dr. Rajesh Kumar', building: 'Block A', established: 1995},
+                {id: 2, name: 'Mechanical Engineering', code: 'ME', hod: 'Dr. Priya Sharma', building: 'Block B', established: 1990},
+                {id: 3, name: 'Electrical Engineering', code: 'EE', hod: 'Dr. Amit Verma', building: 'Block C', established: 1992},
+                {id: 4, name: 'Civil Engineering', code: 'CE', hod: 'Dr. Sunita Reddy', building: 'Block D', established: 1988},
+                {id: 5, name: 'Electronics and Communication', code: 'ECE', hod: 'Dr. Vikram Singh', building: 'Block E', established: 1998}
+            ],
+            courses: [
+                {id: 1, name: 'Data Structures', code: 'CSE201', credits: 4, departmentID: 1, semester: 3, description: 'Fundamentals of data structures and algorithms'},
+                {id: 2, name: 'Database Management Systems', code: 'CSE301', credits: 4, departmentID: 1, semester: 5, description: 'Database design and SQL'},
+                {id: 3, name: 'Operating Systems', code: 'CSE302', credits: 4, departmentID: 1, semester: 5, description: 'OS concepts and implementation'},
+                {id: 4, name: 'Machine Learning', code: 'CSE401', credits: 4, departmentID: 1, semester: 7, description: 'Introduction to ML algorithms'}
+            ],
+            enrollments: [
+                {id: 1, studentID: 1, courseID: 2, enrollmentDate: '2023-08-01', grade: 'A', attendance: 92.5, status: 'Completed'},
+                {id: 2, studentID: 1, courseID: 3, enrollmentDate: '2023-08-01', grade: 'B+', attendance: 88.0, status: 'Completed'},
+                {id: 3, studentID: 2, courseID: 2, enrollmentDate: '2023-08-01', grade: 'A+', attendance: 95.0, status: 'Completed'},
+                {id: 4, studentID: 2, courseID: 4, enrollmentDate: '2024-08-01', grade: null, attendance: 90.0, status: 'Enrolled'}
+            ],
+            faculty: [
+                {id: 1, firstName: 'Rajesh', lastName: 'Kumar', email: 'rajesh.kumar@engg.edu', phone: '9123456780', departmentID: 1, designation: 'Professor', joiningDate: '2005-07-15', salary: 120000},
+                {id: 2, firstName: 'Priya', lastName: 'Sharma', email: 'priya.sharma@engg.edu', phone: '9123456781', departmentID: 2, designation: 'Professor', joiningDate: '2003-08-20', salary: 125000},
+                {id: 3, firstName: 'Amit', lastName: 'Verma', email: 'amit.verma@engg.edu', phone: '9123456782', departmentID: 3, designation: 'Associate Professor', joiningDate: '2010-06-10', salary: 95000}
+            ],
+            examinations: [
+                {id: 1, name: 'DBMS Mid-Term', courseID: 2, examDate: '2024-09-15', maxMarks: 50, type: 'Mid-Term'},
+                {id: 2, name: 'DBMS End-Term', courseID: 2, examDate: '2024-12-10', maxMarks: 100, type: 'End-Term'},
+                {id: 3, name: 'OS Mid-Term', courseID: 3, examDate: '2024-09-20', maxMarks: 50, type: 'Mid-Term'}
+            ]
+        };
+
+        // Initialize app
+        window.onload = function() {
+            init();
+        };
+
+        function init() {
+            updateDashboard();
+            loadStudents();
+            loadDepartments();
+            loadCourses();
+            loadEnrollments();
+            loadFaculty();
+            loadExams();
+            loadReports();
+            populateDepartmentFilters();
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = `alert ${type} show`;
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 3000);
+        }
+
+        function updateDashboard() {
+            document.getElementById('totalStudents').textContent = data.students.length;
+            document.getElementById('totalDepartments').textContent = data.departments.length;
+            document.getElementById('totalCourses').textContent = data.courses.length;
+            document.getElementById('totalFaculty').textContent = data.faculty.length;
+        }
+
+        function getDepartmentName(deptID) {
+            const dept = data.departments.find(d => d.id === deptID);
+            return dept ? dept.name : 'N/A';
+        }
+
+        function getCourseName(courseID) {
+            const course = data.courses.find(c => c.id === courseID);
+            return course ? course.name : 'N/A';
+        }
+
+        function getStudentName(studentID) {
+            const student = data.students.find(s => s.id === studentID);
+            return student ? `${student.firstName} ${student.lastName}` : 'N/A';
+        }
+
+        function loadStudents() {
+            const tbody = document.querySelector('#studentsTable tbody');
+            tbody.innerHTML = '';
+            
+            data.students.forEach(student => {
+                const row = `
+                    <tr>
+                        <td>${student.id}</td>
+                        <td>${student.firstName} ${student.lastName}</td>
+                        <td>${student.email}</td>
+                        <td>${getDepartmentName(student.departmentID)}</td>
+                        <td>${student.semester}</td>
+                        <td>${student.cgpa}</td>
+                        <td><span class="badge badge-${student.status === 'Active' ? 'success' : 'warning'}">${student.status}</span></td>
+                        <td class="action-buttons">
+                            <button class="btn-primary" onclick="viewStudent(${student.id})">View</button>
+                            <button class="btn-secondary" onclick="editStudent(${student.id})">Edit</button>
+                            <button class="btn-danger" onclick="deleteStudent(${student.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function loadDepartments() {
+            const tbody = document.querySelector('#departmentsTable tbody');
+            tbody.innerHTML = '';
+            
+            data.departments.forEach(dept => {
+                const studentCount = data.students.filter(s => s.departmentID === dept.id).length;
+                const row = `
+                    <tr>
+                        <td>${dept.id}</td>
+                        <td>${dept.name}</td>
+                        <td><span class="badge badge-info">${dept.code}</span></td>
+                        <td>${dept.hod}</td>
+                        <td>${dept.building}</td>
+                        <td>${dept.established}</td>
+                        <td><strong>${studentCount}</strong></td>
+                        <td class="action-buttons">
+                            <button class="btn-secondary" onclick="editDepartment(${dept.id})">Edit</button>
+                            <button class="btn-danger" onclick="deleteDepartment(${dept.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function loadCourses() {
+            const tbody = document.querySelector('#coursesTable tbody');
+            tbody.innerHTML = '';
+            
+            data.courses.forEach(course => {
+                const row = `
+                    <tr>
+                        <td>${course.id}</td>
+                        <td>${course.name}</td>
+                        <td><span class="badge badge-info">${course.code}</span></td>
+                        <td>${course.credits}</td>
+                        <td>${getDepartmentName(course.departmentID)}</td>
+                        <td>Sem ${course.semester}</td>
+                        <td class="action-buttons">
+                            <button class="btn-secondary" onclick="editCourse(${course.id})">Edit</button>
+                            <button class="btn-danger" onclick="deleteCourse(${course.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function loadEnrollments() {
+            const tbody = document.querySelector('#enrollmentsTable tbody');
+            tbody.innerHTML = '';
+            
+            data.enrollments.forEach(enrollment => {
+                const row = `
+                    <tr>
+                        <td>${enrollment.id}</td>
+                        <td>${getStudentName(enrollment.studentID)}</td>
+                        <td>${getCourseName(enrollment.courseID)}</td>
+                        <td>${enrollment.enrollmentDate}</td>
+                        <td>${enrollment.grade || 'N/A'}</td>
+                        <td>${enrollment.attendance}%</td>
+                        <td><span class="badge badge-${enrollment.status === 'Completed' ? 'success' : 'info'}">${enrollment.status}</span></td>
+                        <td class="action-buttons">
+                            <button class="btn-secondary" onclick="editEnrollment(${enrollment.id})">Edit</button>
+                            <button class="btn-danger" onclick="deleteEnrollment(${enrollment.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function loadFaculty() {
+            const tbody = document.querySelector('#facultyTable tbody');
+            tbody.innerHTML = '';
+            
+            data.faculty.forEach(member => {
+                const row = `
+                    <tr>
+                        <td>${member.id}</td>
+                        <td>${member.firstName} ${member.lastName}</td>
+                        <td>${member.email}</td>
+                        <td>${getDepartmentName(member.departmentID)}</td>
+                        <td>${member.designation}</td>
+                        <td>${member.joiningDate}</td>
+                        <td>₹${member.salary}</td>
+                        <td class="action-buttons">
+                            <button class="btn-secondary" onclick="editFaculty(${member.id})">Edit</button>
+                            <button class="btn-danger" onclick="deleteFaculty(${member.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function loadExams() {
+            const tbody = document.querySelector('#examsTable tbody');
+            tbody.innerHTML = '';
+            
+            data.examinations.forEach(exam => {
+                const row = `
+                    <tr>
+                        <td>${exam.id}</td>
+                        <td>${exam.name}</td>
+                        <td>${getCourseName(exam.courseID)}</td>
+                        <td>${exam.examDate}</td>
+                        <td>${exam.maxMarks}</td>
+                        <td><span class="badge badge-info">${exam.type}</span></td>
+                        <td class="action-buttons">
+                            <button class="btn-secondary" onclick="editExam(${exam.id})">Edit</button>
+                            <button class="btn-danger" onclick="deleteExam(${exam.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function loadReports() {
+            // Calculate average CGPA
+            const avgCGPA = data.students.reduce((sum, student) => sum + student.cgpa, 0) / data.students.length;
+            document.getElementById('avgCGPA').textContent = avgCGPA.toFixed(2);
+
+            // Count active enrollments
+            const activeEnrollments = data.enrollments.filter(e => e.status === 'Enrolled').length;
+            document.getElementById('activeEnrollments').textContent = activeEnrollments;
+
+            // Count upcoming exams
+            const today = new Date();
+            const upcomingExams = data.examinations.filter(e => new Date(e.examDate) > today).length;
+            document.getElementById('upcomingExams').textContent = upcomingExams;
+
+            // Find top performer
+            const topStudent = data.students.reduce((max, student) => student.cgpa > max.cgpa ? student : max);
+            document.getElementById('topPerformer').textContent = `${topStudent.firstName} (${topStudent.cgpa})`;
+
+            // Load department statistics
+            loadDepartmentStats();
+        }
+
+        function loadDepartmentStats() {
+            const tbody = document.querySelector('#deptStatsTable tbody');
+            tbody.innerHTML = '';
+            
+            data.departments.forEach(dept => {
+                const deptStudents = data.students.filter(s => s.departmentID === dept.id);
+                const avgCGPA = deptStudents.reduce((sum, s) => sum + s.cgpa, 0) / (deptStudents.length || 1);
+                const maxCGPA = Math.max(...deptStudents.map(s => s.cgpa), 0);
+                
+                const row = `
+                    <tr>
+                        <td>${dept.name}</td>
+                        <td>${deptStudents.length}</td>
+                        <td>${avgCGPA.toFixed(2)}</td>
+                        <td>${maxCGPA.toFixed(2)}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function populateDepartmentFilters() {
+            const select = document.getElementById('studentDeptFilter');
+            data.departments.forEach(dept => {
+                const option = document.createElement('option');
+                option.value = dept.id;
+                option.textContent = dept.name;
+                select.appendChild(option);
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+        }
+
+        function showModal(title, content) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').innerHTML = content;
+            document.getElementById('modal').classList.add('show');
+        }
+
+        // Add CRUD operation handlers
+        function showAddStudentModal() {
+            const content = `
+                <form id="addStudentForm" onsubmit="handleAddStudent(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>First Name</label>
+                            <input type="text" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input type="text" name="lastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Department</label>
+                            <select name="departmentID" required>
+                                ${data.departments.map(d => `<option value="${d.id}">${d.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Semester</label>
+                            <input type="number" name="semester" min="1" max="8" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Add Student</button>
+                </form>
+            `;
+            showModal('Add New Student', content);
+        }
+
+        function handleAddStudent(event) {
+            event.preventDefault();
+            const form = event.target;
+            const newStudent = {
+                id: data.students.length + 1,
+                firstName: form.firstName.value,
+                lastName: form.lastName.value,
+                email: form.email.value,
+                phone: form.phone.value,
+                departmentID: parseInt(form.departmentID.value),
+                semester: parseInt(form.semester.value),
+                cgpa: 0,
+                status: 'Active'
+            };
+            
+            data.students.push(newStudent);
+            loadStudents();
+            closeModal();
+            showAlert('Student added successfully!', 'success');
+        }
+    </script>
+</body>
+</html>
